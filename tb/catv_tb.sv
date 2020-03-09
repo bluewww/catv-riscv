@@ -1,4 +1,10 @@
+// Copyright 2020 Robert Balas
+// SPDX-License-Identifier: SHL-0.51
+
 // test the catv_riscv core
+//
+// Author: Robert Balas (balasr@iis.ee.ethz.ch)
+
 module catv_tb #(
   parameter int unsigned RAM_DATA_WIDTH = 32,
   parameter int unsigned RAM_NUM_BYTES = 1024 * 1024,

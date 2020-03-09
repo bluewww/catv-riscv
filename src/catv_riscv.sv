@@ -1,3 +1,6 @@
+// Copyright 2020 Robert Balas
+// SPDX-License-Identifier: SHL-0.51
+
 // single header rv32ie core
 //
 // inspired by Computer Architecture: A Quantitive Approach p. C-30,
@@ -5,6 +8,9 @@
 //
 // We really don't care about modularization.
 // CPI and longest path is just a number.
+//
+// Author: Robert Balas (balasr@iis.ee.ethz.ch)
+
 module catv_riscv #(
   parameter logic [31:0] BOOT_ADDR = 32'h0000_2000
 ) (

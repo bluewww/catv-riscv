@@ -663,8 +663,8 @@ module catv_riscv #(
   assign commit = (insn_ok & ~is_load & ~is_store) | load_commit | store_commit;
 
   // gprs
-  assign reg_a = regs[rs1];
-  assign reg_b = regs[rs2];
+  assign reg_a = rs1 != 5'b0 ? regs[rs1] : 32'b0;
+  assign reg_b = rs2 != 5'b0 ? regs[rs2] : 32'b0;
 
   // writeback to regs
   always_comb begin : writeback_mux

@@ -1,0 +1,7 @@
+/tb/vsim.wlf
+/tb/work/
+/tb/transcript
+/tb/modelsim.ini
+.nfs*
+/tb/prog/hello_world
+/tb/prog/hello_world.hex

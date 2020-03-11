@@ -35,8 +35,8 @@ add wave -noupdate -expand -group tb /catv_tb/master_strb
 add wave -noupdate -expand -group tb /catv_tb/master_wdata
 add wave -noupdate -expand -group tb /catv_tb/master_rvalid
 add wave -noupdate -expand -group tb /catv_tb/master_rdata
-add wave -noupdate -expand -group tb /catv_tb/master_sel_req
-add wave -noupdate -expand -group tb /catv_tb/master_sel_resp
+add wave -noupdate -expand -group tb -expand /catv_tb/master_sel_req
+add wave -noupdate -expand -group tb -expand /catv_tb/master_sel_resp
 add wave -noupdate -expand -group tb /catv_tb/slave_valid
 add wave -noupdate -expand -group tb /catv_tb/slave_ready
 add wave -noupdate -expand -group tb /catv_tb/slave_addr
@@ -67,20 +67,23 @@ add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/insn_valid_o
 add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/insn_ready_i
 add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/insn_data_i
 add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/insn_rvalid_i
-add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/data_addr_o
-add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/data_wen_o
-add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/data_wdata_o
-add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/data_rvalid_i
-add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/data_rdata_i
-add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/data_strb_o
-add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/data_valid_o
-add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/data_ready_i
-add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/hartid_i
-add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/pc_q
-add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/pc_d
-add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/next_pc
-add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/insn_ok
+add wave -noupdate -expand -group core -color {Slate Blue} /catv_tb/i_catv_riscv/data_addr_o
+add wave -noupdate -expand -group core -color {Slate Blue} /catv_tb/i_catv_riscv/data_wen_o
+add wave -noupdate -expand -group core -color {Slate Blue} /catv_tb/i_catv_riscv/data_wdata_o
+add wave -noupdate -expand -group core -color {Slate Blue} /catv_tb/i_catv_riscv/data_rvalid_i
+add wave -noupdate -expand -group core -color {Slate Blue} /catv_tb/i_catv_riscv/data_rdata_i
+add wave -noupdate -expand -group core -color {Slate Blue} /catv_tb/i_catv_riscv/data_strb_o
+add wave -noupdate -expand -group core -color {Slate Blue} /catv_tb/i_catv_riscv/data_valid_o
+add wave -noupdate -expand -group core -color {Slate Blue} /catv_tb/i_catv_riscv/data_ready_i
+add wave -noupdate -expand -group core -color Magenta /catv_tb/i_catv_riscv/commit
 add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/stall
+add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/hartid_i
+add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/regs
+add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/insn_data
+add wave -noupdate -expand -group core -color Orange /catv_tb/i_catv_riscv/pc_q
+add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/pc_d
+add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/pc_next
+add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/insn_ok
 add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/reg_a
 add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/reg_b
 add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/reg_write_valid
@@ -88,6 +91,12 @@ add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/alu_op_a
 add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/alu_op_b
 add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/alu_result
 add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/alu_op
+add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/load_stall
+add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/store_stall
+add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/is_load
+add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/is_store
+add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/ls_strobe
+add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/ls_signext
 add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/wb_value
 add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/wb_mux
 add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/rs1
@@ -100,6 +109,10 @@ add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/u_imm
 add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/b_imm
 add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/s_imm
 add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/i_imm
+add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/insn_valid_q
+add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/insn_valid_d
+add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/insn_data_q
+add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/insn_data_d
 add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/fetch_ok
 add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/insn_fetch_q
 add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/insn_fetch_d
@@ -107,11 +120,19 @@ add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/pc_clear_lsb
 add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/pc_mux
 add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/op_a_mux
 add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/op_b_mux
-add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/retire
+add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/load_result
+add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/load_commit
+add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/load_valid
+add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/load_rd_q
+add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/load_rd_d
+add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/store_commit
+add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/store_valid
+add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/load_state_q
+add wave -noupdate -expand -group core /catv_tb/i_catv_riscv/load_state_d
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {5 ns} 0}
-quietly wave cursor active 1
-configure wave -namecolwidth 205
+WaveRestoreCursors {{last good} {116 ns} 1} {{load bug} {293 ns} 1} {{Cursor 3} {294 ns} 0}
+quietly wave cursor active 3
+configure wave -namecolwidth 252
 configure wave -valuecolwidth 100
 configure wave -justifyvalue left
 configure wave -signalnamewidth 1
@@ -125,4 +146,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {0 ns} {32 ns}
+WaveRestoreZoom {278 ns} {310 ns}

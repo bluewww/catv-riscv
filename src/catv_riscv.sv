@@ -371,22 +371,9 @@ module catv_riscv #(
         is_store = 1'b1;
         ls_strobe = WORD;
       end
-      FENCE: begin
-      end
-      FENCE_I: begin
-      end
-      CSRRW: begin
-      end
-      CSRRS: begin
-      end
-      CSRRC: begin
-      end
-      CSRRWI: begin
-      end
-      CSRRSI: begin
-      end
-      CSRRCI: begin
-      end
+      `decode_regular_insn(FENCE,   MUX_ZERO, MUX_ZERO, WB_ALU, PC_NEXT, OP_ADD, 1'b0)
+      `decode_regular_insn(FENCE_I, MUX_ZERO, MUX_ZERO, WB_ALU, PC_NEXT, OP_ADD, 1'b0)
+
       default: begin
         insn_illegal = 1'b1;
       end

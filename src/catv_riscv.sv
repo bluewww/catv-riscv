@@ -482,7 +482,6 @@ module catv_riscv #(
   logic [31:0] load_result;
   logic        load_commit;
   logic        load_valid;
-  logic [4:0]  load_rd_q, load_rd_d;
 
   logic        store_commit;
   logic        store_valid;
@@ -516,14 +515,12 @@ module catv_riscv #(
   // means the core will always stall on loads (until loads fully complete).
   always_comb begin : handle_load
     load_state_d = load_state_q;
-    load_rd_d    = load_rd_q;
     load_commit  = 1'b0;
     unique case (load_state_q)
       ADDRESS: begin
         load_stall = is_load;
         load_valid = is_load;
         if (data_valid_o && data_ready_i && is_load) begin
-          load_rd_d    = rd; // latch current rd
           load_state_d = WAIT_RESPONSE;
         end
       end
@@ -543,10 +540,8 @@ module catv_riscv #(
   always_ff @(posedge clk_i, negedge rst_ni) begin : load
     if (!rst_ni) begin
       load_state_q <= ADDRESS;
-      load_rd_q    <= 5'b0;
     end else begin
       load_state_q <= load_state_d;
-      load_rd_q    <= load_rd_d;
     end
   end : load
 
@@ -580,8 +575,6 @@ module catv_riscv #(
     end else begin
       if (reg_write_valid && commit && (rd != 5'b0))
         regs[rd] <= wb_value;
-      // if (load_commit && (load_rd_q != 5'b0)) // TODO: disambiguate between load and other commits
-      //   regs[load_rd_q] <= wb_value;
     end
   end : gpr
 

@@ -152,8 +152,8 @@ module catv_tb #(
     for (int i = 0; i < N_BUS_MASTERS; i++) begin
       master_ready[i] = 1'b0;
       if (i == master_sel_resp) begin
-        master_rvalid[i] = slave_rvalid[slave_sel_req];
-        master_rdata[i]  = slave_rdata[slave_sel_req];
+        master_rvalid[i] = slave_rvalid[slave_sel_resp];
+        master_rdata[i]  = slave_rdata[slave_sel_resp];
       end else begin
         master_rvalid[i] = 1'b0;
         master_rdata[i]  = 32'b0;

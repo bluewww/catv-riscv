@@ -1,7 +1,7 @@
 // Copyright 2020 Robert Balas
 // SPDX-License-Identifier: SHL-0.51
 
-// single header rv32ie core
+// simple minimal rv32i core
 //
 // inspired by Computer Architecture: A Quantitive Approach p. C-30,
 // darkriscv.v, RI5CY and riscv-sodor

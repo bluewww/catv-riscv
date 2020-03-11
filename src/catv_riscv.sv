@@ -248,7 +248,16 @@ module catv_riscv #(
   assign funct3 = insn_data[14:12];
   assign funct7 = insn_data[31:25];
 
+`define decode_regular_insn(__name, __op_a_mux, __op_b_mux, __wb_mux, __pc_mux, __alu_op, __reg_write) \
+  __name: begin                                                                                        \
+    op_a_mux = __op_a_mux; op_b_mux = __op_b_mux;                                                      \
+    wb_mux = __wb_mux; pc_mux = __pc_mux;                                                              \
+    alu_op = __alu_op;                                                                                 \
+    reg_write_valid = __reg_write;                                                                     \
+  end
+
   // decoder (2)
+  // Configures the datapath muxes. Really repetive, hence the macros.
   always_comb begin : decoder
     pc_clear_lsb = 1'b0;
     pc_mux   = PC_NEXT;
@@ -264,36 +273,13 @@ module catv_riscv #(
     insn_illegal = 1'b0;
 
     unique casez (insn_data)
-      BEQ: begin
-        op_a_mux = MUX_REG; op_b_mux = MUX_REG;
-        pc_mux = PC_BRANCH;
-        alu_op = OP_SEQ;
-      end
-      BNE: begin
-        op_a_mux = MUX_REG; op_b_mux = MUX_REG;
-        pc_mux = PC_BRANCH;
-        alu_op = OP_SNE;
-      end
-      BLT: begin
-        op_a_mux = MUX_REG; op_b_mux = MUX_REG;
-        pc_mux = PC_BRANCH;
-        alu_op = OP_SLT;
-      end
-      BGE: begin
-        op_a_mux = MUX_REG; op_b_mux = MUX_REG;
-        pc_mux = PC_BRANCH;
-        alu_op = OP_SGE;
-      end
-      BLTU: begin
-        op_a_mux = MUX_REG; op_b_mux = MUX_REG;
-        pc_mux = PC_BRANCH;
-        alu_op = OP_SLTU;
-      end
-      BGEU: begin
-        op_a_mux = MUX_REG; op_b_mux = MUX_REG;
-        pc_mux = PC_BRANCH;
-        alu_op = OP_SGEU;
-      end
+      //                   name  op a     op b     wb mux  pc mux     alu op  rd write
+      `decode_regular_insn(BEQ,  MUX_REG, MUX_REG, WB_ALU, PC_BRANCH, OP_SEQ, 1'b0)
+      `decode_regular_insn(BNE,  MUX_REG, MUX_REG, WB_ALU, PC_BRANCH, OP_SNE, 1'b0)
+      `decode_regular_insn(BLT,  MUX_REG, MUX_REG, WB_ALU, PC_BRANCH, OP_SLT, 1'b0)
+      `decode_regular_insn(BGE,  MUX_REG, MUX_REG, WB_ALU, PC_BRANCH, OP_SGE, 1'b0)
+      `decode_regular_insn(BLTU, MUX_REG, MUX_REG, WB_ALU, PC_BRANCH, OP_SLTU, 1'b0)
+      `decode_regular_insn(BGEU, MUX_REG, MUX_REG, WB_ALU, PC_BRANCH, OP_SGEU, 1'b0)
       JALR: begin // rs1 + i_imm, zero lsb of result
         op_a_mux = MUX_REG; op_b_mux = MUX_I_IMM;
         wb_mux = WB_RET_PC; pc_mux = PC_ALU;
@@ -301,117 +287,29 @@ module catv_riscv #(
         reg_write_valid = 1'b1;
         pc_clear_lsb = 1'b1;
       end
-      JAL: begin
-        op_a_mux = MUX_PC; op_b_mux = MUX_J_IMM;
-        wb_mux = WB_RET_PC; pc_mux = PC_ALU;
-        alu_op = OP_ADD;
-        reg_write_valid = 1'b1;
-      end
-      LUI: begin
-        op_a_mux = MUX_ZERO; op_b_mux = MUX_U_IMM;
-        alu_op = OP_ADD;
-        reg_write_valid = 1'b1;
-      end
-      AUIPC: begin
-        op_a_mux = MUX_PC; op_b_mux = MUX_U_IMM;
-        alu_op = OP_ADD;
-        reg_write_valid = 1'b1;
-      end
-      ADDI: begin
-        op_a_mux = MUX_REG; op_b_mux = MUX_I_IMM;
-        alu_op = OP_ADD;
-        reg_write_valid = 1'b1;
-      end
-      SLLI: begin
-        op_a_mux = MUX_REG; op_b_mux = MUX_I_IMM;
-        alu_op = OP_SLL;
-        reg_write_valid = 1'b1;
-      end
-      SLTI: begin
-        op_a_mux = MUX_REG; op_b_mux = MUX_I_IMM;
-        alu_op = OP_SLT;
-        reg_write_valid = 1'b1;
-      end
-      SLTIU: begin
-        op_a_mux = MUX_REG; op_b_mux = MUX_I_IMM;
-        alu_op = OP_SLTU;
-        reg_write_valid = 1'b1;
-      end
-      XORI: begin
-        op_a_mux = MUX_REG; op_b_mux = MUX_I_IMM;
-        alu_op = OP_XOR;
-        reg_write_valid = 1'b1;
-      end
-      SRLI: begin
-        op_a_mux = MUX_REG; op_b_mux = MUX_I_IMM;
-        alu_op = OP_SRL;
-        reg_write_valid = 1'b1;
-      end
-      SRAI: begin
-        op_a_mux = MUX_REG; op_b_mux = MUX_I_IMM;
-        alu_op = OP_SRA;
-        reg_write_valid = 1'b1;
-      end
-      ORI: begin
-        op_a_mux = MUX_REG; op_b_mux = MUX_I_IMM;
-        alu_op = OP_OR;
-        reg_write_valid = 1'b1;
-      end
-      ANDI: begin
-        op_a_mux = MUX_REG; op_b_mux = MUX_I_IMM;
-        alu_op = OP_AND;
-        reg_write_valid = 1'b1;
-      end
-      ADD: begin
-        op_a_mux = MUX_REG; op_b_mux = MUX_REG;
-        alu_op = OP_ADD;
-        reg_write_valid = 1'b1;
-      end
-      SUB: begin
-        op_a_mux = MUX_REG; op_b_mux = MUX_REG;
-        alu_op = OP_SUB;
-        reg_write_valid = 1'b1;
-      end
-      SLL: begin
-        op_a_mux = MUX_REG; op_b_mux = MUX_REG;
-        alu_op = OP_SLL;
-        reg_write_valid = 1'b1;
-      end
-      SLT: begin
-        op_a_mux = MUX_REG; op_b_mux = MUX_REG;
-        alu_op = OP_SLT;
-        reg_write_valid = 1'b1;
-      end
-      SLTU: begin
-        op_a_mux = MUX_REG; op_b_mux = MUX_REG;
-        alu_op = OP_SLTU;
-        reg_write_valid = 1'b1;
-      end
-      XOR: begin
-        op_a_mux = MUX_REG; op_b_mux = MUX_REG;
-        alu_op = OP_XOR;
-        reg_write_valid = 1'b1;
-      end
-      SRL: begin
-        op_a_mux = MUX_REG; op_b_mux = MUX_REG;
-        alu_op = OP_SRL;
-        reg_write_valid = 1'b1;
-      end
-      SRA: begin
-        op_a_mux = MUX_REG; op_b_mux = MUX_REG;
-        alu_op = OP_SRA;
-        reg_write_valid = 1'b1;
-      end
-      OR: begin
-        op_a_mux = MUX_REG; op_b_mux = MUX_REG;
-        alu_op = OP_OR;
-        reg_write_valid = 1'b1;
-      end
-      AND: begin
-        op_a_mux = MUX_REG; op_b_mux = MUX_REG;
-        alu_op = OP_AND;
-        reg_write_valid = 1'b1;
-      end
+      //                   name   op a      op b       wb mux     pc mux   alu op  rd write
+      `decode_regular_insn(JAL,   MUX_PC,   MUX_J_IMM, WB_RET_PC, PC_ALU,  OP_ADD, 1'b1)
+      `decode_regular_insn(LUI,   MUX_ZERO, MUX_U_IMM, WB_ALU,    PC_NEXT, OP_ADD, 1'b1)
+      `decode_regular_insn(AUIPC, MUX_PC,   MUX_U_IMM, WB_ALU,    PC_NEXT, OP_ADD, 1'b1)
+      `decode_regular_insn(ADDI,  MUX_REG,  MUX_I_IMM, WB_ALU,    PC_NEXT, OP_ADD, 1'b1)
+      `decode_regular_insn(SLLI,  MUX_REG,  MUX_I_IMM, WB_ALU,    PC_NEXT, OP_SLL, 1'b1)
+      `decode_regular_insn(SLTI,  MUX_REG,  MUX_I_IMM, WB_ALU,    PC_NEXT, OP_SLT, 1'b1)
+      `decode_regular_insn(SLTIU, MUX_REG,  MUX_I_IMM, WB_ALU,    PC_NEXT, OP_SLTU, 1'b1)
+      `decode_regular_insn(XORI,  MUX_REG,  MUX_I_IMM, WB_ALU,    PC_NEXT, OP_XOR, 1'b1)
+      `decode_regular_insn(SRLI,  MUX_REG,  MUX_I_IMM, WB_ALU,    PC_NEXT, OP_SRL, 1'b1)
+      `decode_regular_insn(SRAI,  MUX_REG,  MUX_I_IMM, WB_ALU,    PC_NEXT, OP_SRA, 1'b1)
+      `decode_regular_insn(ORI,   MUX_REG,  MUX_I_IMM, WB_ALU,    PC_NEXT, OP_OR,  1'b1)
+      `decode_regular_insn(ANDI,  MUX_REG,  MUX_I_IMM, WB_ALU,    PC_NEXT, OP_AND, 1'b1)
+      `decode_regular_insn(ADD,   MUX_REG,  MUX_REG,   WB_ALU,    PC_NEXT, OP_ADD, 1'b1)
+      `decode_regular_insn(SUB,   MUX_REG,  MUX_REG,   WB_ALU,    PC_NEXT, OP_SUB, 1'b1)
+      `decode_regular_insn(SLL,   MUX_REG,  MUX_REG,   WB_ALU,    PC_NEXT, OP_SLL, 1'b1)
+      `decode_regular_insn(SLT,   MUX_REG,  MUX_REG,   WB_ALU,    PC_NEXT, OP_SLT, 1'b1)
+      `decode_regular_insn(SLTU,  MUX_REG,  MUX_REG,   WB_ALU,    PC_NEXT, OP_SLTU, 1'b1)
+      `decode_regular_insn(XOR,   MUX_REG,  MUX_REG,   WB_ALU,    PC_NEXT, OP_XOR, 1'b1)
+      `decode_regular_insn(SRL,   MUX_REG,  MUX_REG,   WB_ALU,    PC_NEXT, OP_SRL, 1'b1)
+      `decode_regular_insn(SRA,   MUX_REG,  MUX_REG,   WB_ALU,    PC_NEXT, OP_SRA, 1'b1)
+      `decode_regular_insn(OR,    MUX_REG,  MUX_REG,   WB_ALU,    PC_NEXT, OP_OR,  1'b1)
+      `decode_regular_insn(AND,   MUX_REG,  MUX_REG,   WB_ALU,    PC_NEXT, OP_AND, 1'b1)
       LB: begin
         op_a_mux = MUX_REG; op_b_mux = MUX_I_IMM;
         wb_mux = WB_LOAD;

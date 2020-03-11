@@ -16,14 +16,6 @@ prog/hello_world: prog/hello_world.c prog/crt0.S prog/syscalls.c prog/vectors.S
 
 %.hex: %
 	$(OBJCOPY) -O verilog $< $@
-# %.o: %.c
-#	$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
-
-# %: %.o
-#	$(CC) $(LDFLAGS) $(TARGET_ARCH) $^ $(LOADLIBES) $(LDLIBS) -o $@
-
-# %: %.c
-#	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH) $^ $(LOADLIBES) $(LDLIBS) -o $@
 
 .PHONY: clean
 clean:

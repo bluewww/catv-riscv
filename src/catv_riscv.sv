@@ -271,6 +271,7 @@ module catv_riscv #(
     ls_signext = 1'b0;
 
     insn_illegal = 1'b0;
+    alu_op = OP_ADD;
 
     unique casez (insn_data)
       //                   name  op a     op b     wb mux  pc mux     alu op  rd write
@@ -477,6 +478,7 @@ module catv_riscv #(
   assign data_wen_o    = !is_load;
   assign data_wdata_o  = reg_b; // store is always from reg[rs2]
   // data_rvalid_i =
+
   always_comb begin : load_sext
     unique case (ls_strobe)
       WORD:     load_result = data_rdata_i[31:0];
@@ -490,7 +492,7 @@ module catv_riscv #(
   // cycle is_store automatically goes low
   // loads need seperate handling since they wait until the response returns
   assign data_valid_o  = load_valid | store_valid;
-  // assign data_ready_i,
+  // assign data_ready_i
 
   typedef enum logic [3:0] {
     ADDRESS, WAIT_RESPONSE
@@ -503,6 +505,7 @@ module catv_riscv #(
   always_comb begin : handle_load
     load_state_d = load_state_q;
     load_commit  = 1'b0;
+    load_valid   = is_load;
     unique case (load_state_q)
       ADDRESS: begin
         load_stall = is_load;

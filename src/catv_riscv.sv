@@ -381,6 +381,8 @@ module catv_riscv #(
     endcase // unique casez (insn_data)
   end : decoder
 
+`undef decode_regular_insn
+
   // warn us (broken code or core)
   assert property (@(posedge clk_i) disable iff (!rst_ni)
     !(insn_illegal && insn_ok))

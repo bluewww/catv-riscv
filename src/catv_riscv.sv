@@ -102,6 +102,7 @@ module catv_riscv #(
   logic [31:0] pc_q, pc_d;
   logic [31:0] pc_next;
   logic        insn_ok, stall;
+  logic        fetch_ok;
 
   // gpr
   logic [31:0] regs [0:31];

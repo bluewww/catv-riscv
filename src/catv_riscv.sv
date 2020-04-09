@@ -257,6 +257,25 @@ module catv_riscv #(
     reg_write_valid = __reg_write;                                                                     \
   end
 
+`define decode_load_insn(__name, __op_a_mux, __op_b_mux, __wb_mux, __alu_op, __reg_write, __ls_strobe, __is_signext) \
+  __name: begin                                                                                                      \
+    op_a_mux = __op_a_mux; op_b_mux = __op_b_mux;                                                                    \
+    wb_mux = __wb_mux;                                                                                               \
+    alu_op = __alu_op;                                                                                               \
+    is_load = 1'b1;                                                                                                  \
+    ls_strobe = __ls_strobe;                                                                                         \
+    ls_signext = __is_signext;                                                                                       \
+    reg_write_valid = __reg_write;                                                                                   \
+  end
+
+`define decode_store_insn(__name, __op_a_mux, __op_b_mux, __alu_op, __ls_strobe) \
+  __name: begin                                                                  \
+    op_a_mux = __op_a_mux; op_b_mux = __op_b_mux;                                \
+    alu_op = __alu_op;                                                           \
+    is_store = 1'b1;                                                             \
+    ls_strobe = __ls_strobe;                                                     \
+  end
+
   // decoder (2)
   // Configures the datapath muxes. Really repetive, hence the macros.
   always_comb begin : decoder
@@ -312,67 +331,20 @@ module catv_riscv #(
       `decode_regular_insn(SRA,   MUX_REG,  MUX_REG,   WB_ALU,    PC_NEXT, OP_SRA, 1'b1)
       `decode_regular_insn(OR,    MUX_REG,  MUX_REG,   WB_ALU,    PC_NEXT, OP_OR,  1'b1)
       `decode_regular_insn(AND,   MUX_REG,  MUX_REG,   WB_ALU,    PC_NEXT, OP_AND, 1'b1)
-      LB: begin
-        op_a_mux = MUX_REG; op_b_mux = MUX_I_IMM;
-        wb_mux = WB_LOAD;
-        alu_op = OP_ADD;
-        is_load = 1'b1;
-        ls_strobe = BYTE;
-        ls_signext = 1'b1;
-        reg_write_valid = 1'b1;
-      end
-      LH: begin
-        op_a_mux = MUX_REG; op_b_mux = MUX_I_IMM;
-        wb_mux = WB_LOAD;
-        alu_op = OP_ADD;
-        is_load = 1'b1;
-        ls_strobe = HALFWORD;
-        ls_signext = 1'b1;
-        reg_write_valid = 1'b1;
-      end
-      LW: begin
-        op_a_mux = MUX_REG; op_b_mux = MUX_I_IMM;
-        wb_mux = WB_LOAD;
-        alu_op = OP_ADD;
-        is_load = 1'b1;
-        ls_strobe = WORD;
-        ls_signext = 1'b1;
-        reg_write_valid = 1'b1;
-      end
-      LBU: begin
-        op_a_mux = MUX_REG; op_b_mux = MUX_I_IMM;
-        wb_mux = WB_LOAD;
-        alu_op = OP_ADD;
-        is_load = 1'b1;
-        ls_strobe = BYTE;
-        reg_write_valid = 1'b1;
-      end
-      LHU: begin
-        op_a_mux = MUX_REG; op_b_mux = MUX_I_IMM;
-        wb_mux = WB_LOAD;
-        alu_op = OP_ADD;
-        is_load = 1'b1;
-        ls_strobe = HALFWORD;
-        reg_write_valid = 1'b1;
-      end
-      SB: begin
-        op_a_mux = MUX_REG; op_b_mux = MUX_S_IMM;
-        alu_op = OP_ADD;
-        is_store = 1'b1;
-        ls_strobe = BYTE;
-      end
-      SH: begin
-        op_a_mux = MUX_REG; op_b_mux = MUX_S_IMM;
-        alu_op = OP_ADD;
-        is_store = 1'b1;
-        ls_strobe = HALFWORD;
-      end
-      SW: begin
-        op_a_mux = MUX_REG; op_b_mux = MUX_S_IMM;
-        alu_op = OP_ADD;
-        is_store = 1'b1;
-        ls_strobe = WORD;
-      end
+
+      //                name  op a    op b       wb mux    alu op  rdw   strobe    sext
+      `decode_load_insn(LB,   MUX_REG, MUX_I_IMM, WB_LOAD, OP_ADD, 1'b1, BYTE,     1'b1)
+      `decode_load_insn(LH,   MUX_REG, MUX_I_IMM, WB_LOAD, OP_ADD, 1'b1, HALFWORD, 1'b1)
+      `decode_load_insn(LW,   MUX_REG, MUX_I_IMM, WB_LOAD, OP_ADD, 1'b1, WORD,     1'b1)
+      `decode_load_insn(LBU,  MUX_REG, MUX_I_IMM, WB_LOAD, OP_ADD, 1'b1, BYTE,     1'b0)
+      `decode_load_insn(LHU,  MUX_REG, MUX_I_IMM, WB_LOAD, OP_ADD, 1'b1, HALFWORD, 1'b0)
+
+      //                 name  op a     op b       alu op  strobe
+      `decode_store_insn(SB,   MUX_REG, MUX_S_IMM, OP_ADD, BYTE)
+      `decode_store_insn(SH,   MUX_REG, MUX_S_IMM, OP_ADD, HALFWORD)
+      `decode_store_insn(SW,   MUX_REG, MUX_S_IMM, OP_ADD, WORD)
+
+      //                   name     op a      op b      wb mux  pc mux   alu op  rd write
       `decode_regular_insn(FENCE,   MUX_ZERO, MUX_ZERO, WB_ALU, PC_NEXT, OP_ADD, 1'b0)
       `decode_regular_insn(FENCE_I, MUX_ZERO, MUX_ZERO, WB_ALU, PC_NEXT, OP_ADD, 1'b0)
 
@@ -383,6 +355,8 @@ module catv_riscv #(
   end : decoder
 
 `undef decode_regular_insn
+`undef decode_load_insn
+`undef decode_store_insn
 
   // warn us (broken code or core)
   assert property (@(posedge clk_i) disable iff (!rst_ni)

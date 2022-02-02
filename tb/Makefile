@@ -3,7 +3,7 @@
 
 RISCV           = $(HOME)/.riscv
 CC		= $(RISCV)/bin/riscv32-unknown-elf-gcc
-CFLAGS		= -march=rv32i -Os -g
+CFLAGS		= -march=rv32i -mabi=ilp32 -Os -g
 LDFLAGS         = -nostdlib -static -T prog/link.ld
 LDLIBS		= -lc -lm -lgcc
 

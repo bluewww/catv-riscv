@@ -5,3 +5,5 @@
 .nfs*
 /tb/prog/hello_world
 /tb/prog/hello_world.hex
+/tb/catv_riscv
+/tb/obj_dir
